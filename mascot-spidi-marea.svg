@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 250" role="img" aria-labelledby="mascot-title mascot-desc" data-state="calm">
+  <title id="mascot-title">Mascota de SpidiDay</title>
+  <desc id="mascot-desc">Mascota arácnida original de SpidiDay, sentada tranquilamente.</desc>
+  <style>
+    :root{--mask:#c95f55;--mask-dark:#a94c47;--ink:#34445a;--cream:#fff8e8;--web:#f0b4a7;--attention:#e4bd51}
+    .body,.head,.arm,.leg,.hand,.foot,.thread,.attention{transform-box:fill-box;transform-origin:center}
+    .character{animation:float 4s ease-in-out infinite}
+    .web{fill:none;stroke:var(--web);stroke-width:1.4;stroke-linecap:round;opacity:.65}
+    .outline{stroke:var(--ink);stroke-width:2.2;stroke-linejoin:round}
+    .eye{fill:var(--cream);stroke:var(--ink);stroke-width:2;transition:transform .25s ease}
+    .thread{opacity:0;stroke:var(--ink);stroke-width:1.5;stroke-linecap:round;stroke-dasharray:2 3}
+    .attention{opacity:0;fill:var(--attention);stroke:var(--ink);stroke-width:1.5}
+    [data-state="awake"] .arm-right,[data-state="lively"] .arm-right,[data-state="progress"] .arm-right{transform:rotate(-27deg) translateY(-6px)}
+    [data-state="awake"] .eye,[data-state="lively"] .eye,[data-state="progress"] .eye{transform:scaleY(1.08)}
+    [data-state="almost"] .thread,[data-state="complete"] .thread{opacity:.7}
+    [data-state="almost"] .character,[data-state="complete"] .character{transform-origin:120px 54px;animation:hang 4s ease-in-out infinite}
+    [data-state="complete"] .arm-left{transform:rotate(20deg) translateY(-7px)}
+    [data-state="almost"] .arm-right,[data-state="complete"] .arm-right{transform:rotate(-30deg) translateY(-8px)}
+    [data-state="complete"] .leg-left{transform:rotate(13deg)}
+    [data-state="complete"] .leg-right{transform:rotate(-13deg)}
+    [data-state="warning"] .attention{opacity:1;animation:notice 2.4s ease-in-out infinite}
+    [data-state="warning"] .eye{transform:scaleY(1.12) scaleX(.96)}
+    [data-state="rest"] .character{animation:rest 5s ease-in-out infinite}
+    [data-state="rest"] .eye{transform:scaleY(.38)}
+    .celebrate .character{animation:celebrate .52s ease-out}
+    @keyframes float{50%{transform:translateY(-4px) rotate(1deg)}}
+    @keyframes hang{50%{transform:translateY(4px) rotate(2deg)}}
+    @keyframes rest{50%{transform:translateY(-2px)}}
+    @keyframes notice{50%{transform:translateY(-3px)}}
+    @keyframes celebrate{45%{transform:translateY(-10px) rotate(-3deg)}75%{transform:translateY(1px) rotate(1deg)}}
+    @media(prefers-reduced-motion:reduce){.character,.attention{animation:none!important}.eye,.arm,.leg{transition:none!important}}
+  </style>
+  <line class="thread" x1="120" y1="0" x2="120" y2="52"/>
+  <g class="character">
+    <g class="leg leg-left"><path class="outline" fill="var(--ink)" d="M102 184c-12 10-17 26-12 34 5 7 17 3 23-9l9-18z"/><ellipse class="foot" cx="91" cy="219" rx="15" ry="8" fill="var(--ink)"/></g>
+    <g class="leg leg-right"><path class="outline" fill="var(--ink)" d="M138 184c12 10 17 26 12 34-5 7-17 3-23-9l-9-18z"/><ellipse class="foot" cx="149" cy="219" rx="15" ry="8" fill="var(--ink)"/></g>
+    <path class="body outline" fill="var(--ink)" d="M89 146c5-23 19-35 31-35s26 12 31 35c5 25-3 50-31 50s-36-25-31-50z"/>
+    <path fill="var(--mask-dark)" d="M102 137c5-10 11-15 18-15s13 5 18 15c-12 7-24 7-36 0z" opacity=".8"/>
+    <g class="arm arm-left"><path class="outline" fill="var(--mask)" d="M93 142c-16 3-27 16-27 30 0 8 6 12 12 8 5-4 6-15 16-19z"/><circle class="hand outline" cx="72" cy="178" r="9" fill="var(--mask)"/></g>
+    <g class="arm arm-right"><path class="outline" fill="var(--mask)" d="M147 142c16 3 27 16 27 30 0 8-6 12-12 8-5-4-6-15-16-19z"/><circle class="hand outline" cx="168" cy="178" r="9" fill="var(--mask)"/></g>
+    <path class="head outline" fill="var(--mask)" d="M72 83c0-32 19-56 48-56s49 24 48 56c0 34-19 55-48 55S72 117 72 83z"/>
+    <path class="web" d="M120 31v101M89 46c20 16 42 16 62 0M78 73c27 15 57 15 84 0M76 101c29 12 59 12 88 0M120 31C99 49 91 79 92 116M120 31c21 18 29 48 28 85"/>
+    <path class="eye eye-left" d="M89 72c11-7 19-5 24 2-4 15-12 23-23 21-5-7-5-15-1-23z"/>
+    <path class="eye eye-right" d="M151 72c-11-7-19-5-24 2 4 15 12 23 23 21 5-7 5-15 1-23z"/>
+  </g>
+  <g class="attention" aria-hidden="true"><circle cx="190" cy="44" r="12"/><path d="M190 37v8m0 5v1" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/></g>
+</svg>
