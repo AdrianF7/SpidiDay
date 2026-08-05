@@ -151,5 +151,8 @@ html,body{overscroll-behavior-y:none}.bottom-nav{left:0;right:0;margin-inline:au
 .story-day-note-empty .supporting{margin:5px 0 0;font-size:12px}.story-day-note-empty .story-note-edit{white-space:nowrap}
 
 /* Evita el desplazamiento lateral en Mi historia sin afectar las demás vistas. */
-#view-historia{width:100%;max-width:100%;min-width:0;overflow-x:clip;touch-action:pan-y}#view-historia .story-timeline,#view-historia .origin-chapter,#view-historia .story-day,#view-historia .story-detail,#view-historia .story-origin,#view-historia .story-card,#view-historia .story-day-note-card{width:100%;max-width:100%;min-width:0}#view-historia .story-day,#view-historia .story-detail,#view-historia .story-promise,#view-historia .story-day-note-card{overflow-wrap:anywhere;word-break:break-word}#view-historia button,#view-historia input,#view-historia textarea,#view-historia blockquote{max-width:100%;min-width:0}
+#view-historia{width:100%;max-width:100%;min-width:0;overflow-x:clip}#view-historia .story-timeline,#view-historia .origin-chapter,#view-historia .story-day,#view-historia .story-detail,#view-historia .story-origin,#view-historia .story-card,#view-historia .story-day-note-card{width:100%;max-width:100%;min-width:0}#view-historia .story-day,#view-historia .story-detail,#view-historia .story-promise,#view-historia .story-day-note-card{overflow-wrap:anywhere;word-break:break-word}#view-historia button,#view-historia input,#view-historia textarea,#view-historia blockquote{max-width:100%;min-width:0}
+
+/* El desplazamiento horizontal de iOS ocurre en el documento raíz. */
+html,body{width:100%;max-width:100%;overflow-x:clip;overscroll-behavior-x:none}body,#app,main{min-width:0}#app,main{width:100%;max-width:100%}.story-timeline,.origin-chapter{min-width:0;max-width:100%}
 
