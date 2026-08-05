@@ -141,6 +141,7 @@ button:focus-visible{outline:3px solid #405a76;outline-offset:3px}.day-result-di
 
 /* Mantiene la navegación anclada durante el rebote elástico de iOS. */
 html,body{overscroll-behavior-y:none}.bottom-nav{left:0;right:0;margin-inline:auto;transform:translateZ(0);width:100%;max-width:680px;backface-visibility:hidden;-webkit-backface-visibility:hidden;contain:layout paint;will-change:transform;touch-action:manipulation}
+@media (hover:none) and (pointer:coarse){body.keyboard-open .bottom-nav{transform:translate3d(0,110%,0);visibility:hidden;pointer-events:none}body.keyboard-open #app{padding-bottom:28px}}
 
 .story-day::after{content:"Ver este día  →";display:block;margin-top:9px;padding-top:11px;border-top:1px solid rgba(37,42,52,.08);color:#91483f;font-size:11px;font-weight:780;letter-spacing:.02em}.story-day:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(78,52,43,.075)}.story-day:focus-visible{outline:3px solid rgba(233,138,122,.34);outline-offset:3px}.story-day:active{transform:scale(.98);box-shadow:0 5px 16px rgba(78,52,43,.05)}
 
