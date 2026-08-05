@@ -140,7 +140,7 @@ button:focus-visible{outline:3px solid #405a76;outline-offset:3px}.day-result-di
 @media(prefers-reduced-motion:reduce){.origin-photo-wrap::before,.origin-photo-wrap::after{transform:none}}
 
 /* Mantiene la navegación anclada durante el rebote elástico de iOS. */
-html,body{overscroll-behavior-y:none}.bottom-nav{left:0;right:0;margin-inline:auto;transform:none;width:100%;max-width:680px;backface-visibility:hidden;-webkit-backface-visibility:hidden;touch-action:manipulation}
+html,body{overscroll-behavior-y:none}.bottom-nav{left:0;right:0;bottom:0;margin-inline:auto;transform:none;width:100%;max-width:680px;height:82px!important;padding:6px max(10px,env(safe-area-inset-left)) 10px!important;grid-auto-rows:66px;align-items:start;backface-visibility:hidden;-webkit-backface-visibility:hidden;touch-action:manipulation}
 body.keyboard-open .bottom-nav,body.nav-reflow .bottom-nav{display:none!important}body.keyboard-open #app{padding-bottom:28px}
 
 .story-day::after{content:"Ver este día  →";display:block;margin-top:9px;padding-top:11px;border-top:1px solid rgba(37,42,52,.08);color:#91483f;font-size:11px;font-weight:780;letter-spacing:.02em}.story-day:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(78,52,43,.075)}.story-day:focus-visible{outline:3px solid rgba(233,138,122,.34);outline-offset:3px}.story-day:active{transform:scale(.98);box-shadow:0 5px 16px rgba(78,52,43,.05)}
