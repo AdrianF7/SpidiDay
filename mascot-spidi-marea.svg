@@ -3,7 +3,7 @@
   <desc id="mascot-desc">Mascota arácnida original de SpidiDay, sentada tranquilamente.</desc>
   <style>
     :root{--mask:#c95f55;--mask-dark:#a94c47;--ink:#34445a;--cream:#fff8e8;--web:#f0b4a7;--attention:#e4bd51}
-    .body,.head,.arm,.leg,.hand,.foot,.thread,.attention{transform-box:fill-box;transform-origin:center}
+    .body,.head,.arm,.leg,.hand,.foot,.eye,.thread,.attention{transform-box:fill-box;transform-origin:center}
     .character{animation:float 4s ease-in-out infinite}
     .web{fill:none;stroke:var(--web);stroke-width:1.4;stroke-linecap:round;opacity:.65}
     .outline{stroke:var(--ink);stroke-width:2.2;stroke-linejoin:round}
