@@ -55,20 +55,16 @@ async function importBackup(file){try{if(!file)return;const parsed=JSON.parse(aw
 async function resetData(){if(!confirm('Esto borrará todos tus hábitos, gastos, progreso y ajustes de este dispositivo. ¿Continuar?'))return;if(!confirm('Última confirmación: esta operación no se puede deshacer sin una copia JSON.'))return;for(const name of AdriDB.STORES)await AdriDB.clear(name);for(const name of DEFAULT_CATEGORIES)await AdriDB.put('categories',{id:uid(),name});await refresh();toast('Todo listo para empezar de nuevo')}
 function nav(view){$$('.view').forEach(x=>x.classList.toggle('active',x.id===`view-${view}`));$$('.bottom-nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===view));scrollTo({top:0,behavior:'smooth'})}
 function guardBottomNavFromKeyboard(){
-  const viewport=window.visualViewport;
-  let largestHeight=viewport?.height||window.innerHeight;
   const isTextField=element=>element?.matches?.('textarea,[contenteditable="true"],input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="button"]):not([type="submit"]):not([type="reset"])');
-  const sync=()=>{
-    const height=viewport?.height||window.innerHeight;
-    if(height>largestHeight)largestHeight=height;
-    const keyboardVisible=isTextField(document.activeElement)&&largestHeight-height>Math.max(120,largestHeight*.18);
-    document.body.classList.toggle('keyboard-open',keyboardVisible);
-  };
-  document.addEventListener('focusin',event=>{if(isTextField(event.target)){document.body.classList.add('keyboard-open');requestAnimationFrame(sync)}});
-  document.addEventListener('focusout',()=>setTimeout(sync,80));
-  viewport?.addEventListener('resize',sync);
-  viewport?.addEventListener('scroll',sync);
-  window.addEventListener('orientationchange',()=>{largestHeight=viewport?.height||window.innerHeight;document.body.classList.remove('keyboard-open')});
+  const hide=event=>{if(isTextField(event.target))document.body.classList.add('keyboard-open')};
+  const restore=()=>setTimeout(()=>{
+    if(isTextField(document.activeElement))return;
+    document.body.classList.remove('keyboard-open');
+    requestAnimationFrame(()=>window.scrollTo(window.scrollX,window.scrollY));
+  },180);
+  document.addEventListener('focusin',hide);
+  document.addEventListener('focusout',restore);
+  window.addEventListener('orientationchange',()=>document.body.classList.remove('keyboard-open'));
 }
 async function init(){$('#todayPhraseNext').addEventListener('click',()=>renderDailyPhrase(true));try{await AdriDB.open();if(!(await AdriDB.all('categories')).length)for(const name of DEFAULT_CATEGORIES)await AdriDB.put('categories',{id:uid(),name});$('#dayPicker').innerHTML=DAYS.map((d,i)=>`<label title="${DAY_NAMES[i]}"><input type="checkbox" value="${i}"><span>${d}</span></label>`).join('');await refresh();if(navigator.storage?.persist){const persisted=await navigator.storage.persist();$('#storageStatus').textContent=persisted?'Almacenamiento persistente activado.':'El navegador administra el almacenamiento automáticamente.'}else $('#storageStatus').textContent='Almacenamiento local activado.'}catch(err){console.error(err);toast('No se pudo abrir el almacenamiento local.')}if('serviceWorker'in navigator)try{await navigator.serviceWorker.register('./service-worker.js')}catch(err){console.error('Service worker:',err)}}
 document.addEventListener('click',e=>{const t=e.target.closest('button,[data-view],[data-close],[data-action]');if(!t)return;if(t.dataset.action==='close-habit-editor'||t.dataset.action==='cancel-habit-editor'){e.preventDefault();closeHabitEditor();return}if(t.matches('button[data-complete]')){toggleComplete(t);return}if(t.dataset.view){e.preventDefault();nav(t.dataset.view)}if(t.dataset.open==='routine')openRoutine();if(t.dataset.open==='expense')openExpense();if(t.hasAttribute('data-close')){e.preventDefault();t.closest('dialog')?.close()}if(t.dataset.routineMenu)itemMenu('routine',t.dataset.routineMenu);if(t.dataset.expenseMenu)itemMenu('expense',t.dataset.expenseMenu);if(t.dataset.categoryMenu)itemMenu('category',t.dataset.categoryMenu)});
