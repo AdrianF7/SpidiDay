@@ -57,6 +57,16 @@ function nav(view){$$('.view').forEach(x=>x.classList.toggle('active',x.id===`vi
 function guardBottomNavFromKeyboard(){
   const bottomNav=document.querySelector('.bottom-nav');
   if(bottomNav?.parentElement!==document.body)document.body.append(bottomNav);
+  let positionFrame;
+  const positionBottomNav=()=>{
+    cancelAnimationFrame(positionFrame);
+    positionFrame=requestAnimationFrame(()=>{
+      const viewport=window.visualViewport;
+      const pageTop=viewport?.pageTop??window.scrollY;
+      const visibleHeight=viewport?.height??window.innerHeight;
+      bottomNav.style.setProperty('--nav-screen-top',`${Math.max(0,pageTop+visibleHeight-82)}px`);
+    });
+  };
   const isTextField=element=>element?.matches?.('textarea,[contenteditable="true"],input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="button"]):not([type="submit"]):not([type="reset"])');
   let restoreTimer;
   const hide=event=>{if(isTextField(event.target))document.body.classList.add('keyboard-open')};
@@ -66,15 +76,21 @@ function guardBottomNavFromKeyboard(){
       if(isTextField(document.activeElement))return;
       document.body.classList.add('nav-reflow');
       document.body.classList.remove('keyboard-open');
+      positionBottomNav();
       requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.remove('nav-reflow')));
     },520);
   };
   document.addEventListener('focusin',hide);
   document.addEventListener('focusout',restore);
+  window.addEventListener('scroll',positionBottomNav,{passive:true});
+  window.addEventListener('resize',positionBottomNav,{passive:true});
+  window.visualViewport?.addEventListener('scroll',positionBottomNav,{passive:true});
   window.visualViewport?.addEventListener('resize',()=>{
+    positionBottomNav();
     if(!isTextField(document.activeElement)&&document.body.classList.contains('keyboard-open'))restore();
   });
   window.addEventListener('orientationchange',()=>document.body.classList.remove('keyboard-open'));
+  positionBottomNav();
 }
 async function init(){$('#todayPhraseNext').addEventListener('click',()=>renderDailyPhrase(true));try{await AdriDB.open();if(!(await AdriDB.all('categories')).length)for(const name of DEFAULT_CATEGORIES)await AdriDB.put('categories',{id:uid(),name});$('#dayPicker').innerHTML=DAYS.map((d,i)=>`<label title="${DAY_NAMES[i]}"><input type="checkbox" value="${i}"><span>${d}</span></label>`).join('');await refresh();if(navigator.storage?.persist){const persisted=await navigator.storage.persist();$('#storageStatus').textContent=persisted?'Almacenamiento persistente activado.':'El navegador administra el almacenamiento automáticamente.'}else $('#storageStatus').textContent='Almacenamiento local activado.'}catch(err){console.error(err);toast('No se pudo abrir el almacenamiento local.')}if('serviceWorker'in navigator)try{await navigator.serviceWorker.register('./service-worker.js')}catch(err){console.error('Service worker:',err)}}
 document.addEventListener('click',e=>{const t=e.target.closest('button,[data-view],[data-close],[data-action]');if(!t)return;if(t.dataset.action==='close-habit-editor'||t.dataset.action==='cancel-habit-editor'){e.preventDefault();closeHabitEditor();return}if(t.matches('button[data-complete]')){toggleComplete(t);return}if(t.dataset.view){e.preventDefault();nav(t.dataset.view)}if(t.dataset.open==='routine')openRoutine();if(t.dataset.open==='expense')openExpense();if(t.hasAttribute('data-close')){e.preventDefault();t.closest('dialog')?.close()}if(t.dataset.routineMenu)itemMenu('routine',t.dataset.routineMenu);if(t.dataset.expenseMenu)itemMenu('expense',t.dataset.expenseMenu);if(t.dataset.categoryMenu)itemMenu('category',t.dataset.categoryMenu)});
