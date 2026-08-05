@@ -55,6 +55,8 @@ async function importBackup(file){try{if(!file)return;const parsed=JSON.parse(aw
 async function resetData(){if(!confirm('Esto borrará todos tus hábitos, gastos, progreso y ajustes de este dispositivo. ¿Continuar?'))return;if(!confirm('Última confirmación: esta operación no se puede deshacer sin una copia JSON.'))return;for(const name of AdriDB.STORES)await AdriDB.clear(name);for(const name of DEFAULT_CATEGORIES)await AdriDB.put('categories',{id:uid(),name});await refresh();toast('Todo listo para empezar de nuevo')}
 function nav(view){$$('.view').forEach(x=>x.classList.toggle('active',x.id===`view-${view}`));$$('.bottom-nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===view));scrollTo({top:0,behavior:'smooth'})}
 function guardBottomNavFromKeyboard(){
+  const bottomNav=document.querySelector('.bottom-nav');
+  if(bottomNav?.parentElement!==document.body)document.body.append(bottomNav);
   const isTextField=element=>element?.matches?.('textarea,[contenteditable="true"],input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="button"]):not([type="submit"]):not([type="reset"])');
   let restoreTimer;
   const hide=event=>{if(isTextField(event.target))document.body.classList.add('keyboard-open')};
