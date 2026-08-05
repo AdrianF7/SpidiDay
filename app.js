@@ -56,14 +56,22 @@ async function resetData(){if(!confirm('Esto borrará todos tus hábitos, gastos
 function nav(view){$$('.view').forEach(x=>x.classList.toggle('active',x.id===`view-${view}`));$$('.bottom-nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===view));scrollTo({top:0,behavior:'smooth'})}
 function guardBottomNavFromKeyboard(){
   const isTextField=element=>element?.matches?.('textarea,[contenteditable="true"],input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="button"]):not([type="submit"]):not([type="reset"])');
+  let restoreTimer;
   const hide=event=>{if(isTextField(event.target))document.body.classList.add('keyboard-open')};
-  const restore=()=>setTimeout(()=>{
-    if(isTextField(document.activeElement))return;
-    document.body.classList.remove('keyboard-open');
-    requestAnimationFrame(()=>window.scrollTo(window.scrollX,window.scrollY));
-  },180);
+  const restore=()=>{
+    clearTimeout(restoreTimer);
+    restoreTimer=setTimeout(()=>{
+      if(isTextField(document.activeElement))return;
+      document.body.classList.add('nav-reflow');
+      document.body.classList.remove('keyboard-open');
+      requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.remove('nav-reflow')));
+    },520);
+  };
   document.addEventListener('focusin',hide);
   document.addEventListener('focusout',restore);
+  window.visualViewport?.addEventListener('resize',()=>{
+    if(!isTextField(document.activeElement)&&document.body.classList.contains('keyboard-open'))restore();
+  });
   window.addEventListener('orientationchange',()=>document.body.classList.remove('keyboard-open'));
 }
 async function init(){$('#todayPhraseNext').addEventListener('click',()=>renderDailyPhrase(true));try{await AdriDB.open();if(!(await AdriDB.all('categories')).length)for(const name of DEFAULT_CATEGORIES)await AdriDB.put('categories',{id:uid(),name});$('#dayPicker').innerHTML=DAYS.map((d,i)=>`<label title="${DAY_NAMES[i]}"><input type="checkbox" value="${i}"><span>${d}</span></label>`).join('');await refresh();if(navigator.storage?.persist){const persisted=await navigator.storage.persist();$('#storageStatus').textContent=persisted?'Almacenamiento persistente activado.':'El navegador administra el almacenamiento automáticamente.'}else $('#storageStatus').textContent='Almacenamiento local activado.'}catch(err){console.error(err);toast('No se pudo abrir el almacenamiento local.')}if('serviceWorker'in navigator)try{await navigator.serviceWorker.register('./service-worker.js')}catch(err){console.error('Service worker:',err)}}
