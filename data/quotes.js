@@ -272,7 +272,6 @@ window.SPIDIDAY_QUOTES = [
   ['Crecer significa aceptar que algunas victorias también duelen.','Peter Parker','Spider-Man'],
   ['Mis errores no tienen por qué definir todas mis decisiones futuras.','Peter Parker','Spider-Man'],
   ['Una persona común puede hacer algo extraordinario cuando decide no mirar hacia otro lado.','Peter Parker','Spider-Man'],
-  ['Salvar a alguien vale más que demostrar quién es el más fuerte.','Peter Parker','Spider-Man'],
   ['La responsabilidad no espera a que estés preparado.','Peter Parker','Spider-Man'],
   ['No tengo que convertirme en otra persona para merecer la máscara.','Miles Morales','Spider-Man'],
   ['El primer paso puede ser torpe y aun así llevarte en la dirección correcta.','Miles Morales','Spider-Man'],

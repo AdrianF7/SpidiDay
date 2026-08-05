@@ -98,3 +98,14 @@ En **Perfil → Mi cuaderno** se pueden consultar, buscar, editar, compartir y e
 - `data/`: versículos y frases locales.
 - `fonts/`, `icons/` y SVG: recursos visuales locales.
 - `.nojekyll`: publicación estática directa en GitHub Pages.
+## Mi historia
+
+SpidiDay incluye una vista editorial para conservar días, hábitos, gastos,
+versículos y reflexiones. La carta para tu yo pequeño, las promesas y la
+fotografía de “El origen” se guardan únicamente en IndexedDB del dispositivo.
+La fotografía de “El origen” está incluida localmente en `assets/spidiiii.jpeg`
+y también puede sustituirse desde el selector del iPhone; nunca se sube a un
+servidor. La migración de base de datos es aditiva (versión 4)
+y conserva todos los stores existentes. Los mensajes positivos y de apoyo se
+integrarán cuando se proporcionen sus dos listas exactas, sin generar textos
+automáticamente.
