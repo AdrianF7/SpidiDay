@@ -1,8 +1,8 @@
 (function () {
   'use strict';
   const DB_NAME = 'AdriDayDB';
-  const DB_VERSION = 5;
-  const STORES = ['routines', 'completions', 'expenses', 'categories', 'settings', 'compassInsights', 'compassFeedback', 'dailyVerses', 'favoriteVerses', 'verseReflections', 'shortHabitCompletions', 'verseJournalEntries', 'storyDays', 'storyLetter', 'storyPromises', 'storyMessageHistory', 'storyOrigin', 'dailyHistory', 'motivationPools', 'appSettings'];
+  const DB_VERSION = 7;
+  const STORES = ['routines', 'completions', 'expenses', 'categories', 'settings', 'compassInsights', 'compassFeedback', 'dailyVerses', 'favoriteVerses', 'verseReflections', 'shortHabitCompletions', 'verseJournalEntries', 'storyDays', 'storyLetter', 'storyPromises', 'storyMessageHistory', 'storyOrigin', 'dailyHistory', 'motivationPools', 'appSettings', 'deadlineTasks', 'accounts', 'transactions', 'financeCategories'];
   let connection;
 
   function open() {
@@ -21,6 +21,10 @@
         const history = request.transaction.objectStore('dailyHistory');
         ['localDate', 'status', 'finalizedAt', 'motivationMessageType'].forEach(index => {
           if (!history.indexNames.contains(index)) history.createIndex(index, index, { unique: false });
+        });
+        const transactions = request.transaction.objectStore('transactions');
+        ['type', 'date', 'accountId', 'fromAccountId', 'toAccountId', 'categoryId'].forEach(index => {
+          if (!transactions.indexNames.contains(index)) transactions.createIndex(index, index, { unique: false });
         });
       };
       request.onsuccess = () => { connection = request.result; connection.onversionchange = () => connection.close(); resolve(connection); };

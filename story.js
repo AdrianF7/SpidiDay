@@ -28,13 +28,14 @@
     return completion ? new Date(`${localDate}T21:59:59`) : null;
   }
   function routineScheduled(routine, localDate) {
+    if (routine.scheduledDate) return routine.scheduledDate===localDate;
     const weekday=new Date(`${localDate}T12:00:00`).getDay(), created=routine.createdAt?getLocalDate(routine.createdAt):'0000-00-00';
     const ended=routine.archivedAt||routine.deletedAt||routine.inactiveAt;
     return Array.isArray(routine.days)&&routine.days.includes(weekday)&&created<=localDate&&(!ended||getLocalDate(ended)>localDate)&&(routine.active!==false||!ended||getLocalDate(ended)>localDate);
   }
   async function buildSnapshot(localDate, legacy) {
-    const [routines,completions,shorts,expenses,categories,verse,journals]=await Promise.all([
-      db.all('routines'),db.all('completions'),db.all('shortHabitCompletions'),db.all('expenses'),db.all('categories'),db.get('dailyVerses',localDate),db.all('verseJournalEntries')
+    const [routines,completions,shorts,expenses,transactions,categories,financeCategories,verse,journals]=await Promise.all([
+      db.all('routines'),db.all('completions'),db.all('shortHabitCompletions'),db.all('expenses'),db.all('transactions'),db.all('categories'),db.all('financeCategories'),db.get('dailyVerses',localDate),db.all('verseJournalEntries')
     ]);
     const cutoff=getLocalCutoff(localDate), legacyHabits=legacy?.habitSnapshot||legacy?.habits;
     let habitSnapshot;
@@ -47,7 +48,8 @@
       const status=complete?'completed':short?.status==='completed'?'short_version':short?.status==='omitted'?'skipped':'incomplete';
       return {habitId:r.id,name:r.name,scheduledTime:r.time||'',period:r.period||'',difficulty:r.difficulty||'',scheduledForDate:localDate,status,completedAt:completedAt?.toISOString()||null,completedBeforeCutoff:status==='completed'&&completedAt<=cutoff};
     });
-    const expenseSnapshot=expenses.filter(e=>e.date===localDate).map(e=>({expenseId:e.id,category:e.categoryName||categories.find(c=>c.id===e.categoryId)?.name||'Sin categoría',description:e.description||'',amount:Number(e.amount)||0,time:e.time||e.createdAt||e.updatedAt||null,payment:e.payment||''}));
+    const modernExpenses=transactions.filter(t=>t.type==='expense'&&t.date===localDate),expenseSource=modernExpenses.length?modernExpenses:expenses.filter(e=>e.date===localDate);
+    const expenseSnapshot=expenseSource.map(e=>({expenseId:e.id,category:e.categoryName||financeCategories.find(c=>c.id===e.categoryId)?.name||categories.find(c=>c.id===e.categoryId)?.name||'Sin categoría',description:e.description||'',amount:Number(e.amount)||0,time:e.time||e.createdAt||e.updatedAt||null,payment:e.payment||''}));
     let verseSnapshot=legacy?.verseSnapshot||legacy?.verse||null;
     if (!verseSnapshot&&verse) verseSnapshot=window.RV1909_VERSES?.find(v=>v.id===verse.verseId)||verse;
     const journal=journals.find(j=>j.verseDate===localDate);
@@ -106,7 +108,7 @@
     try{return await finalizing}finally{finalizing=null}
   }
   async function recoverUnfinishedDays() {
-    const [history,legacy,routines,completions,expenses]=await Promise.all([db.all('dailyHistory'),db.all('storyDays'),db.all('routines'),db.all('completions'),db.all('expenses')]);
+    const [history,legacy,routines,completions,expenses,transactions]=await Promise.all([db.all('dailyHistory'),db.all('storyDays'),db.all('routines'),db.all('completions'),db.all('expenses'),db.all('transactions')]);
     for (const record of history) {
       const messageType=record.status==='completed'?'success':record.status==='incomplete'?'support':null;
       if (record.finalizedAt && messageType && !officialMessage(messageType,record.motivationMessageText)) {
@@ -117,7 +119,7 @@
         if(valid&&(record.motivationMessageId!==valid.id||record.motivationMessageType!==messageType)){Object.assign(record,{motivationMessageId:valid.id,motivationMessageType:messageType,updatedAt:getNow().toISOString()});await db.put('dailyHistory',record)}
       }
     }
-    const today=getLocalDate(), candidates=[...legacy.map(x=>x.localDate||x.date),...completions.map(x=>x.date),...expenses.map(x=>x.date),...routines.map(x=>x.createdAt&&getLocalDate(x.createdAt))].filter(Boolean).sort();
+    const today=getLocalDate(), candidates=[...legacy.map(x=>x.localDate||x.date),...completions.map(x=>x.date),...expenses.map(x=>x.date),...transactions.filter(x=>x.type==='expense').map(x=>x.date),...routines.map(x=>x.createdAt&&getLocalDate(x.createdAt))].filter(Boolean).sort();
     if(!candidates.length)return;
     const cursor=localDateObject(candidates[0]), end=localDateObject(today), done=new Set(history.filter(x=>x.finalizedAt).map(x=>x.localDate));
     for(;cursor<end;cursor.setDate(cursor.getDate()+1)){const date=getLocalDate(cursor);if(!done.has(date))await finalizeDay(date,'recovered')}
@@ -132,8 +134,8 @@
   async function saveDayNote(localDate,text,editing=false){const record=await db.get('dailyHistory',localDate);if(!record?.finalizedAt)return null;if(record.dayNote&&(!editing||!canEditDayNote(record)))return record;const note=String(text||'').trim();if(!note)return record;record.dayNote=note;record.dayNoteUpdatedAt=record.dayNoteUpdatedAt||getNow().toISOString();record.dayNoteEditedAt=editing?getNow().toISOString():(record.dayNoteEditedAt||null);record.updatedAt=getNow().toISOString();await db.put('dailyHistory',record);return record}
   async function syncClosedDayExpenses(localDate=getLocalDate()){
     const record=await db.get('dailyHistory',localDate);if(!record?.finalizedAt)return null;
-    const [expenses,categories]=await Promise.all([db.all('expenses'),db.all('categories')]), previous=new Map((record.expenseSnapshot||[]).map(item=>[item.expenseId||item.id,item]));
-    const expenseSnapshot=expenses.filter(expense=>expense.date===localDate).map(expense=>{const saved=previous.get(expense.id);return {expenseId:expense.id,category:saved?.category||expense.categoryName||categories.find(category=>category.id===expense.categoryId)?.name||'Sin categoría',description:expense.description||'',amount:Number(expense.amount)||0,time:expense.time||expense.createdAt||expense.updatedAt||null,payment:expense.payment||''}});
+    const [expenses,transactions,categories,financeCategories]=await Promise.all([db.all('expenses'),db.all('transactions'),db.all('categories'),db.all('financeCategories')]), previous=new Map((record.expenseSnapshot||[]).map(item=>[item.expenseId||item.id,item])),modern=transactions.filter(item=>item.type==='expense'&&item.date===localDate),source=modern.length?modern:expenses.filter(expense=>expense.date===localDate);
+    const expenseSnapshot=source.map(expense=>{const saved=previous.get(expense.id);return {expenseId:expense.id,category:saved?.category||expense.categoryName||financeCategories.find(category=>category.id===expense.categoryId)?.name||categories.find(category=>category.id===expense.categoryId)?.name||'Sin categoría',description:expense.description||'',amount:Number(expense.amount)||0,time:expense.time||expense.createdAt||expense.updatedAt||null,payment:expense.payment||''}});
     record.expenseSnapshot=expenseSnapshot;record.totalSpent=expenseSnapshot.reduce((total,expense)=>total+expense.amount,0);record.updatedAt=getNow().toISOString();await db.put('dailyHistory',record);return record;
   }
   async function syncAllClosedDayExpenses(){const days=(await db.all('dailyHistory')).filter(day=>day.finalizedAt);await Promise.all(days.map(day=>syncClosedDayExpenses(day.localDate)));return days.length}

@@ -2,6 +2,8 @@
 
 SpidiDay es una PWA privada para hábitos, gastos, reflexiones y progreso diario. Funciona sin conexión, no usa servicios externos y conserva los datos en IndexedDB dentro del dispositivo.
 
+La planificación principal es flexible: permite preparar manualmente las actividades de mañana o asignarlas a una fecha concreta. Las rutinas semanales creadas en versiones anteriores se conservan para no perder el historial.
+
 ## Ejecutar localmente
 
 La aplicación debe abrirse mediante HTTP, nunca con `file://`.
@@ -67,7 +69,7 @@ Guarda una copia antes de borrar datos de Safari, cambiar de iPhone o cambiar la
 ## Privacidad y almacenamiento
 
 - Los datos se guardan localmente en `AdriDayDB`; se conserva este nombre interno para no perder instalaciones anteriores.
-- La versión actual de IndexedDB es la 3.
+- La versión actual de IndexedDB es la 7.
 - Las migraciones crean almacenes e índices faltantes sin borrar los anteriores.
 - `clear()` solo se utiliza al restaurar una copia confirmada o al ejecutar **Restablecer datos** con doble confirmación; no se utiliza durante una actualización.
 - No se usa `indexedDB.deleteDatabase()` ni `localStorage.clear()`.
@@ -91,6 +93,7 @@ En **Perfil → Mi cuaderno** se pueden consultar, buscar, editar, compartir y e
 - `index.html`: estructura, formularios y metadatos iOS.
 - `styles.css`: diseño móvil, áreas seguras y movimiento reducido.
 - `app.js`: hábitos, gastos, navegación, CSV y copias.
+- `finance.js`: cuentas, movimientos, transferencias y cálculos financieros centralizados.
 - `compass.js`: Brújula, versículo diario y Mi cuaderno.
 - `db.js`: IndexedDB y migraciones.
 - `service-worker.js`: caché offline.
