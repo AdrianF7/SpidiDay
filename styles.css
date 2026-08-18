@@ -139,8 +139,9 @@ button:focus-visible{outline:3px solid #405a76;outline-offset:3px}.day-result-di
 @media(min-width:430px){.origin-photo-paper{min-height:570px}.origin-photo-paper #originPhoto{max-height:610px}.story-origin{padding-left:36px;padding-right:36px}}
 @media(prefers-reduced-motion:reduce){.origin-photo-wrap::before,.origin-photo-wrap::after{transform:none}}
 
-/* Un solo scroll del documento; la navegación vive fuera de #app y no hereda sus animaciones. */
-html,body{min-height:100%;overscroll-behavior-y:none}body{min-height:100dvh}#app{min-height:100dvh;overflow:visible}
+/* iOS 26 puede desfasar el visual viewport después del teclado. El viewport raíz no
+   se desplaza: #app es el único scroller y la navegación queda fuera de él. */
+html,body{height:100%;min-height:100%;overflow:hidden;overscroll-behavior:none}body{min-height:100dvh}#app{height:100dvh;min-height:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch}
 .plan-actions .secondary{grid-column:1/-1}
 .deadline-panel{margin:0 0 28px;padding:20px;border-radius:26px;background:color-mix(in srgb,var(--surface) 92%,var(--lavender));border:1px solid var(--border)}.deadline-task{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--border)}.deadline-task:last-child{border-bottom:0}.deadline-task .check{align-self:start;margin-top:3px}.deadline-task.overdue small{color:#a33f36;font-weight:750}.deadline-task.due-soon small{color:#8b5f14;font-weight:700}.deadline-task.done{opacity:.58}.deadline-task.done strong{text-decoration:line-through}.deadline-notes{display:block;margin-top:4px;white-space:pre-wrap}.deadline-completed{margin-top:12px}.deadline-completed summary{cursor:pointer;color:var(--muted);font-size:.85rem;font-weight:700}
 
