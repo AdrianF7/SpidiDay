@@ -61,6 +61,14 @@ function validBackup(x){const core=['routines','completions','expenses','categor
 async function importBackup(file){try{if(!file)return;const parsed=JSON.parse(await file.text());if(!validBackup(parsed))throw new Error('El archivo no tiene una estructura válida de AdriDay.');if(!confirm(`Se reemplazarán todos los datos actuales por la copia del ${new Intl.DateTimeFormat('es-CO',{dateStyle:'medium',timeStyle:'short'}).format(new Date(parsed.exportedAt))}. ¿Deseas continuar?`))return;await AdriDB.replaceAll(parsed.data);await window.SpidiFinance?.initialize?.();await refresh();toast('Copia restaurada correctamente')}catch(err){console.error(err);toast(err.message||'No se pudo importar la copia.')}finally{$('#importBackup').value=''}}
 async function resetData(){if(!confirm('Esto borrará todos tus hábitos, gastos, progreso y ajustes de este dispositivo. ¿Continuar?'))return;if(!confirm('Última confirmación: esta operación no se puede deshacer sin una copia JSON.'))return;for(const name of AdriDB.STORES)await AdriDB.clear(name);for(const name of DEFAULT_CATEGORIES)await AdriDB.put('categories',{id:uid(),name});await window.SpidiFinance?.initialize?.();await refresh();toast('Todo listo para empezar de nuevo')}
 function nav(view){$$('.view').forEach(x=>x.classList.toggle('active',x.id===`view-${view}`));$$('.bottom-nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===view));$('#app').scrollTo({top:0,behavior:'smooth'})}
+function setupAppShell(){
+  const app=$('#app'),bottomNav=$('.bottom-nav');
+  if(!app||!bottomNav||app.parentElement?.classList.contains('app-shell'))return;
+  const shell=document.createElement('div');
+  shell.className='app-shell';
+  document.body.insertBefore(shell,app);
+  shell.append(app,bottomNav);
+}
 function setupKeyboardNavigation(){
   const viewport=window.visualViewport;
   const editable='input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="button"]):not([type="submit"]):not([type="reset"]),textarea,select,[contenteditable="true"]';
@@ -89,6 +97,6 @@ document.addEventListener('change',e=>{if(e.target.matches('[data-complete]'))to
 $('#routineForm').addEventListener('submit',saveRoutine);$('#routineDialog').addEventListener('cancel',e=>{e.preventDefault();closeHabitEditor()});$('#deadlineForm').addEventListener('submit',saveDeadline);$('#expenseForm').addEventListener('submit',saveExpense);$('#simpleForm').addEventListener('submit',saveSimple);$('#budgetButton').onclick=()=>openSimple('budget');$('#addCategory').onclick=()=>openSimple('category');if($('#clearFilters'))$('#clearFilters').onclick=()=>{$$('#filterFrom,#filterTo,#filterCategory,#filterPayment').forEach(x=>x.value='');renderExpenses()};if($('#exportCsv'))$('#exportCsv').onclick=exportCsv;$('#exportBackup').onclick=exportBackup;$('#importBackup').onchange=e=>importBackup(e.target.files[0]);$('#resetData').onclick=resetData;
 function loadCompassFeature(){const verses=document.createElement('script');verses.src='./data/verses-rv1909.js';verses.onload=()=>{const feature=document.createElement('script');feature.src='./compass.js?v=15';feature.onerror=()=>toast('No se pudo abrir la Brújula.');document.body.append(feature)};verses.onerror=()=>toast('No se pudo cargar la palabra de hoy.');document.body.append(verses)}
 window.MareaApp={refresh,toast,localDate,routinesFor,progressFor,isDone,nav,getState:()=>state};
-window.addEventListener('focus',()=>{if($('#view-hoy').classList.contains('active'))refresh()});setupKeyboardNavigation();init();loadCompassFeature();
+window.addEventListener('focus',()=>{if($('#view-hoy').classList.contains('active'))refresh()});setupAppShell();setupKeyboardNavigation();init();loadCompassFeature();
 })();
 

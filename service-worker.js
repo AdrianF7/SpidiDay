@@ -1,4 +1,4 @@
-const CACHE='spididay-v4.1.2';
+const CACHE='spididay-v4.2.0';
 const APP_SHELL=['./','./index.html','./styles.css?v=29','./data/quotes.js?v=19','./data/motivation-messages.js?v=1','./db.js?v=14','./finance.js?v=2','./app.js?v=1.1.3','./story.js?v=2.4.2','./compass.js?v=15','./data/verses-rv1909.js','./manifest.webmanifest?v=2','./mascot-spidi-marea.svg?v=13','./decorations-marea.svg','./assets/origin-spididay.png','./fonts/Manrope-Variable.ttf','./fonts/Fraunces-Variable.ttf','./icons/icon-192.png?v=2','./icons/icon-512.png?v=2'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(APP_SHELL)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
